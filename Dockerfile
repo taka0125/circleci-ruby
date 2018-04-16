@@ -1,4 +1,4 @@
-FROM circleci/ruby:2.5.0
+FROM circleci/ruby:2.5.1
 
 RUN set -x && \
     sudo apt-get install -y libldap2-dev libsasl2-dev qt5-default libqt5webkit5-dev

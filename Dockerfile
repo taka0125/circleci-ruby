@@ -1,4 +1,4 @@
-FROM circleci/ruby:2.6.3
+FROM circleci/ruby:2.6.3-node
 
 RUN echo "fs.inotify.max_user_watches=204800" | sudo tee -a /etc/sysctl.conf
 

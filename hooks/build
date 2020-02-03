@@ -3,7 +3,9 @@ set -ex
 
 DOCKER_TAG=${DOCKER_TAG:-"2.6.3-2.1.2"}
 RUBY_VERSION=${DOCKER_TAG%-*}
-BUNDLER_VERSION=${DOCKER_TAG#*-}
+BUNDLER_VERSION=${DOCKER_TAG##*-}
+
+exit
 
 docker build \
   --build-arg "RUBY_VERSION=${RUBY_VERSION}" \

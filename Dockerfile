@@ -1,4 +1,7 @@
-FROM circleci/ruby:2.6.3-node
+ARG RUBY_VERSION
+FROM circleci/ruby:$RUBY_VERSION-node
+
+ARG BUNDLER_VERSION
 
 RUN echo "fs.inotify.max_user_watches=204800" | sudo tee -a /etc/sysctl.conf
 
@@ -8,4 +11,5 @@ RUN set -x && \
     sudo apt-get clean
 
 RUN set -x && \
-    gem update bundler
+    gem update bundler && \
+    gem install bundler:$BUNDLER_VERSION

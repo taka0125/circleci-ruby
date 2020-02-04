@@ -5,8 +5,6 @@ DOCKER_TAG=${DOCKER_TAG:-"2.6.3-2.1.2"}
 RUBY_VERSION=${DOCKER_TAG%-*}
 BUNDLER_VERSION=${DOCKER_TAG##*-}
 
-exit
-
 docker build \
   --build-arg "RUBY_VERSION=${RUBY_VERSION}" \
   --build-arg "BUNDLER_VERSION=${BUNDLER_VERSION}" \

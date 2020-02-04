@@ -1,5 +1,5 @@
 ARG RUBY_VERSION
-FROM circleci/ruby:$RUBY_VERSION-node
+FROM circleci/ruby:$RUBY_VERSION
 
 ARG BUNDLER_VERSION
 

@@ -1,9 +1,11 @@
 #!/bin/bash
 set -ex
 
-DOCKER_TAG=${DOCKER_TAG:-"2.6.3-2.1.2"}
-RUBY_VERSION=${DOCKER_TAG%-*}
-BUNDLER_VERSION=${DOCKER_TAG##*-}
+DOCKER_TAG=${DOCKER_TAG:-"2.7.2:2.2.8"}
+OPTIONS=(${DOCKER_TAG//:/ })
+echo $OPTIONS
+RUBY_VERSION=${OPTIONS[0]:-"2.7.2"}
+BUNDLER_VERSION=${OPTIONS[1]:-"2.2.8"}
 
 docker build \
   --build-arg "RUBY_VERSION=${RUBY_VERSION}" \

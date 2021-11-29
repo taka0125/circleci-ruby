@@ -36,6 +36,15 @@ jobs:
         with:
           images: taka0125/circleci-ruby
 
+      - name: set ENV
+        run: |
+          CURRENT_TAG=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
+          BUILD_ARG_RUBY_VERSION=${CURRENT_TAG%-*}
+          BUILD_ARG_BUNDLER_VERSION=${CURRENT_TAG##*-}
+
+          echo "BUILD_ARG_RUBY_VERSION=${BUILD_ARG_RUBY_VERSION}" >> $GITHUB_ENV
+          echo "BUILD_ARG_BUNDLER_VERSION=${BUILD_ARG_BUNDLER_VERSION}" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
         with:
@@ -46,9 +55,8 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           build-args: |
-            CURRENT_TAG=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-            RUBY_VERSION=${CURRENT_TAG%-*}
-            BUNDLER_VERSION=${CURRENT_TAG##*-}
+            RUBY_VERSION=${{ env.BUILD_ARG_RUBY_VERSION }}
+            BUNDLER_VERSION=${{ env.BUILD_ARG_BUNDLER_VERSION }}
 
       - name: Move cache
         run: |

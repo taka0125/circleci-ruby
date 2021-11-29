@@ -46,7 +46,7 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           build-args: |
-            CURRENT_TAG=${{ steps.meta.outputs.tags }}
+            CURRENT_TAG=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
             RUBY_VERSION=${CURRENT_TAG%-*}
             BUNDLER_VERSION=${CURRENT_TAG##*-}
 

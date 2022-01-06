@@ -1,3 +1,4 @@
+LABEL "org.opencontainers.image.source"="https://github.com/taka0125/circleci-ruby.git"
 ARG RUBY_VERSION
 FROM cimg/ruby:$RUBY_VERSION
 

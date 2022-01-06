@@ -24,39 +24,53 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-buildx-
 
+      - name: Prepare Build Arg
+        id: prepare_build_arg
+        run: |
+          CURRENT_TAG=${GITHUB_REF#refs/tags/}
+          echo ::set-output name=CURRENT_TAG::${CURRENT_TAG}
+          echo ::set-output name=RUBY_VERSION::${CURRENT_TAG%-*}
+          echo ::set-output name=BUNDLER_VERSION::${CURRENT_TAG##*-}
+
       - name: Log in to Docker Hub
-        uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+        uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      - name: Build and push Docker image to Docker Hub
+        uses: docker/build-push-action@v2
         with:
-          images: taka0125/circleci-ruby
-
-      - name: set ENV
-        run: |
-          CURRENT_TAG=${{ fromJSON(steps.meta.outputs.json).labels['org.opencontainers.image.version'] }}
-          BUILD_ARG_RUBY_VERSION=${CURRENT_TAG%-*}
-          BUILD_ARG_BUNDLER_VERSION=${CURRENT_TAG##*-}
-
-          echo "BUILD_ARG_RUBY_VERSION=${BUILD_ARG_RUBY_VERSION}" >> $GITHUB_ENV
-          echo "BUILD_ARG_BUNDLER_VERSION=${BUILD_ARG_BUNDLER_VERSION}" >> $GITHUB_ENV
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
-        with:
-          context: .
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: taka0125/cimage-ruby:${{ steps.prepare_build_arg.outputs.CURRENT_TAG }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           build-args: |
-            RUBY_VERSION=${{ env.BUILD_ARG_RUBY_VERSION }}
-            BUNDLER_VERSION=${{ env.BUILD_ARG_BUNDLER_VERSION }}
+            RUBY_VERSION=${{ steps.prepare_build_arg.outputs.RUBY_VERSION }}
+            BUNDLER_VERSION=${{ steps.prepare_build_arg.outputs.BUNDLER_VERSION }}
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+
+      - name: Build and push Docker image to GitHub Container Registry
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/cimage-ruby:${{ steps.prepare_build_arg.outputs.CURRENT_TAG }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+          build-args: |
+            RUBY_VERSION=${{ steps.prepare_build_arg.outputs.RUBY_VERSION }}
+            BUNDLER_VERSION=${{ steps.prepare_build_arg.outputs.BUNDLER_VERSION }}
 
       - name: Move cache
         run: |

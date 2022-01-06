@@ -43,6 +43,8 @@ jobs:
         with:
           push: true
           tags: taka0125/cimage-ruby:${{ steps.prepare_build_arg.outputs.CURRENT_TAG }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           build-args: |
@@ -62,6 +64,8 @@ jobs:
           push: true
           tags: |
             ghcr.io/${{ github.repository_owner }}/cimage-ruby:${{ steps.prepare_build_arg.outputs.CURRENT_TAG }}
+          labels: |
+            org.opencontainers.image.source=${{ github.event.repository.clone_url }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           build-args: |

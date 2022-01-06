@@ -1,6 +1,6 @@
-LABEL org.opencontainers.image.source="https://github.com/taka0125/circleci-ruby"
 ARG RUBY_VERSION
 FROM cimg/ruby:$RUBY_VERSION
+LABEL org.opencontainers.image.source="https://github.com/taka0125/circleci-ruby"
 
 ARG BUNDLER_VERSION
 
